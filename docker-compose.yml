@@ -1,0 +1,83 @@
+version: '2'
+networks:
+  cluster:
+services:
+
+  # collector:
+  #   image: python:3.6
+
+  
+  # workspace:
+  #   image: 3.3.9-jdk-7-alpine
+
+  kafka:
+    build: 
+      context: kafka/
+      dockerfile: Dockerfile
+    networks:
+      - cluster
+    expose:
+      - 9092
+      - 9121
+
+  zookeeper:
+    image: zookeeper:3.4.9
+    ports:
+      - 2181
+    networks: 
+      - cluster
+    environment:
+        ZOO_MY_ID: 1
+
+  hbase:
+    build: 
+      context: hbase/
+      dockerfile: Dockerfile
+    networks:
+      - cluster
+
+  storm_nimbus:
+    build: 
+      context: storm/
+      dockerfile: Dockerfile
+    networks:
+      - cluster
+    expose:
+      - 6700
+      - 6701
+      - 6702
+      - 6703
+    command: "/opt/apache-storm-1.0.2/bin/storm nimbus"
+
+  storm_ui:
+    build: 
+      context: storm/
+      dockerfile: Dockerfile
+    networks:
+      - cluster
+    ports:
+      - "8080:8080"
+    command: "/opt/apache-storm-1.0.2/bin/storm ui"
+
+  storm_supervisor:
+    build: 
+      context: storm/
+      dockerfile: Dockerfile
+    networks:
+      - cluster
+    expose:
+      - 6700
+      - 6701
+      - 6702
+      - 6703
+    command: "/opt/apache-storm-1.0.2/bin/storm supervisor"
+
+  storm_workspace:
+    build: 
+      context: storm/
+      dockerfile: Dockerfile
+    networks:
+      - cluster
+    volumes:
+      - "./storm/topology:/opt/topology"
+    command: "/bin/bash /opt/topology/do-nothing.bash"  # We want this container to silently exit, will call from command line.
