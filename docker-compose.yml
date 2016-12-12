@@ -3,12 +3,23 @@ networks:
   cluster:
 services:
 
-  # collector:
-  #   image: python:3.6
+  generator:
+    build:
+      context: generator/
+      dockerfile: Dockerfile
+    networks:
+      - cluster
+    command: "/bin/bash -c 'true'"  # Don't run by default
 
-  
-  # workspace:
-  #   image: 3.3.9-jdk-7-alpine
+  collector:
+    build:
+      context: collector/
+      dockerfile: Dockerfile
+    networks:
+      - cluster
+    command: "/bin/bash -c 'sleep 15 && python /opt/netflow-collector.py'"  # Delay for Kafka to start
+    expose:
+      - 50000
 
   kafka:
     build: 
@@ -28,6 +39,28 @@ services:
       - cluster
     environment:
         ZOO_MY_ID: 1
+        ZOO_SERVERS: server.1=zookeeper:2888:3888 server.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
+
+  zookeeper_2:
+    image: zookeeper:3.4.9
+    ports:
+      - 2181
+    networks: 
+      - cluster
+    environment:
+        ZOO_MY_ID: 2
+        ZOO_SERVERS: server.1=zookeeper:2888:3888 server.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
+
+  zookeeper_3:
+    image: zookeeper:3.4.9
+    ports:
+      - 2181
+    networks: 
+      - cluster
+    environment:
+        ZOO_MY_ID: 3
+        ZOO_SERVERS: server.1=zookeeper:2888:3888 server.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
+
 
   hbase:
     build: 
@@ -56,7 +89,8 @@ services:
     networks:
       - cluster
     ports:
-      - "8080:8080"
+      - "8080:8080"  # UI Port
+
     command: "/opt/apache-storm-1.0.2/bin/storm ui"
 
   storm_supervisor:
@@ -70,6 +104,8 @@ services:
       - 6701
       - 6702
       - 6703
+    ports:  
+      - "8000:8000"  # Logging Port
     command: "/opt/apache-storm-1.0.2/bin/storm supervisor"
 
   storm_workspace:
@@ -79,5 +115,5 @@ services:
     networks:
       - cluster
     volumes:
-      - "./storm/topology:/opt/topology"
+     - "./storm/topology:/opt/topology"
     command: "/bin/bash /opt/topology/do-nothing.bash"  # We want this container to silently exit, will call from command line.

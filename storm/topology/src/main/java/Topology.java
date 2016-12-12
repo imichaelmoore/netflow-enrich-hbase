@@ -1,14 +1,17 @@
-/**
- * Created by moorema1 on 12/10/16.
- */
 import org.apache.storm.Config;
-import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.kafka.*;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
 
+import org.apache.storm.LocalCluster;
+
 import java.util.UUID;
+
+/**
+ * Created by moorema1 on 12/10/16.
+ */
+
 
 public class Topology {
 
@@ -21,18 +24,17 @@ public class Topology {
 
         String zkConnString = "zookeeper:2181";
         String topic = "netflow";
-        BrokerHosts hosts = new ZkHosts(zkConnString);
 
-        SpoutConfig kafkaSpoutConfig = new SpoutConfig (hosts, topic, "/" + topic,
-                UUID.randomUUID().toString());
-        kafkaSpoutConfig.bufferSizeBytes = 1024 * 1024 * 4;
-        kafkaSpoutConfig.fetchSizeBytes = 1024 * 1024 * 4;
-        // kafkaSpoutConfig.forceFromStart = true;
-        kafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+        BrokerHosts zk = new ZkHosts(zkConnString);
+        SpoutConfig spoutConf = new SpoutConfig(zk, topic, "/", UUID.randomUUID().toString());
+        spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
+        KafkaSpout kafkaSpout = new KafkaSpout(spoutConf);
 
         TopologyBuilder builder = new TopologyBuilder();
-        builder.setSpout("kafka-spout", new KafkaSpout(kafkaSpoutConfig));
-        builder.setBolt("word-counter", new CountBolt()).shuffleGrouping("kafka-spout");
+        builder.setSpout("kafka-spout", kafkaSpout);
+        builder.setBolt("print", new EnrichmentBolt()).shuffleGrouping("kafka-spout");
+
+//        LocalCluster cluster = new LocalCluster();
 
         StormSubmitter.submitTopology("KafkaStormSample", config, builder.createTopology());
     }
