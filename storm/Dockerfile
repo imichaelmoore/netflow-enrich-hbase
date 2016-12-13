@@ -15,8 +15,6 @@ ADD storm.yaml /opt/apache-storm-1.0.2/conf/storm.yaml
 #COPY maven-dependencies.tar.bz2 /root/mvn.tbz2
 #RUN cd /root && tar xvjf /root/mvn.tbz2 && mv /root/m2 /root/.m2
 
-ADD topology/m2.tgz /
-
 WORKDIR /opt/topology
 COPY topology/pom.xml /opt/topology/pom.xml
 
