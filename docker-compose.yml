@@ -39,27 +39,27 @@ services:
       - cluster
     environment:
         ZOO_MY_ID: 1
-        ZOO_SERVERS: server.1=zookeeper:2888:3888 server.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
+        ZOO_SERVERS: server.1=zookeeper:2888:3888 #.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
 
-  zookeeper_2:
-    image: zookeeper:3.4.9
-    ports:
-      - 2181
-    networks: 
-      - cluster
-    environment:
-        ZOO_MY_ID: 2
-        ZOO_SERVERS: server.1=zookeeper:2888:3888 server.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
+  # zookeeper_2:
+  #   image: zookeeper:3.4.9
+  #   ports:
+  #     - 2181
+  #   networks: 
+  #     - cluster
+  #   environment:
+  #       ZOO_MY_ID: 2
+  #       ZOO_SERVERS: server.1=zookeeper:2888:3888 server.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
 
-  zookeeper_3:
-    image: zookeeper:3.4.9
-    ports:
-      - 2181
-    networks: 
-      - cluster
-    environment:
-        ZOO_MY_ID: 3
-        ZOO_SERVERS: server.1=zookeeper:2888:3888 server.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
+  # zookeeper_3:
+  #   image: zookeeper:3.4.9
+  #   ports:
+  #     - 2181
+  #   networks: 
+  #     - cluster
+  #   environment:
+  #       ZOO_MY_ID: 3
+  #       ZOO_SERVERS: server.1=zookeeper:2888:3888 server.2=zookeeper_2:2888:3888 server.3=zookeeper_3:2888:3888
 
 
   hbase:
@@ -68,6 +68,20 @@ services:
       dockerfile: Dockerfile
     networks:
       - cluster
+    expose:
+      - 2181
+      - 60000
+      - 60010
+      - 60020
+      - 60030
+      - 8080
+      - 9090
+      - 9095
+    ports:
+      - "2181:2181"
+      - "60000:60000"
+    environment:
+      - JAVA_HOME:/usr/lib/jvm/java-8-openjdk-amd64/jre/
 
   storm_nimbus:
     build: 
@@ -114,6 +128,6 @@ services:
       dockerfile: Dockerfile
     networks:
       - cluster
-    volumes:
-     - "./storm/topology:/opt/topology"
+    # volumes:
+    #  - "./storm/topology:/opt/topology"
     command: "/bin/bash /opt/topology/do-nothing.bash"  # We want this container to silently exit, will call from command line.

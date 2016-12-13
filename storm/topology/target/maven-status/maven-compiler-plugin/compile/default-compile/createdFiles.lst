@@ -1,2 +1,3 @@
 EnrichmentBolt.class
 Topology.class
+HBaseClient.class

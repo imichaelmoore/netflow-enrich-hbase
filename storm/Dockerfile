@@ -12,9 +12,15 @@ RUN cd /opt/apache-storm-1.0.2/lib && wget http://central.maven.org/maven2/org/a
 ADD storm.yaml /opt/apache-storm-1.0.2/conf/storm.yaml
 
 # Only download dependencies when pom changes
-COPY maven-dependencies.tar.bz2 /root/mvn.tbz2
-RUN cd /root && tar xvjf /root/mvn.tbz2 && mv /root/m2 /root/.m2
+#COPY maven-dependencies.tar.bz2 /root/mvn.tbz2
+#RUN cd /root && tar xvjf /root/mvn.tbz2 && mv /root/m2 /root/.m2
+
+ADD topology/m2.tgz /
+
+WORKDIR /opt/topology
+COPY topology/pom.xml /opt/topology/pom.xml
 
 COPY topology/ /opt/topology
-RUN cd /opt/topology && /opt/apache-maven-3.3.9/bin/mvn clean 
-RUN cd /opt/topology && /opt/apache-maven-3.3.9/bin/mvn package
+RUN /opt/apache-maven-3.3.9/bin/mvn clean 
+RUN /opt/apache-maven-3.3.9/bin/mvn package
+WORKDIR /opt

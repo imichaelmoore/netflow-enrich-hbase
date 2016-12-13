@@ -2,9 +2,16 @@ import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.kafka.*;
 import org.apache.storm.spout.SchemeAsMultiScheme;
+import org.apache.storm.topology.BasicOutputCollector;
+import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.TopologyBuilder;
 
-import org.apache.storm.LocalCluster;
+import org.apache.storm.topology.base.BaseBasicBolt;
+import org.apache.storm.tuple.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.apache.storm.tuple.Fields;
+
 
 import java.util.UUID;
 
@@ -14,6 +21,24 @@ import java.util.UUID;
 
 
 public class Topology {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Topology.class);
+
+
+    public static class PrinterBolt extends BaseBasicBolt {
+        @Override
+        public void execute(Tuple tuple, BasicOutputCollector collector) {
+            System.out.println(tuple);
+            LOG.debug("Got tuple {}", tuple);
+            collector.emit(tuple.getValues());
+        }
+
+        @Override
+        public void declareOutputFields(OutputFieldsDeclarer ofd) {
+            ofd.declare(new Fields("value"));
+        }
+
+    }
 
     public static void main(String[] args) throws Exception{
         Config config = new Config();
@@ -32,7 +57,8 @@ public class Topology {
 
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("kafka-spout", kafkaSpout);
-        builder.setBolt("print", new EnrichmentBolt()).shuffleGrouping("kafka-spout");
+        builder.setBolt("printer-bolt", new PrinterBolt()).shuffleGrouping("kafka-spout");
+        builder.setBolt("hbase-writer", new HBaseWriterBolt()).shuffleGrouping("kafka-spout");
 
 //        LocalCluster cluster = new LocalCluster();
 

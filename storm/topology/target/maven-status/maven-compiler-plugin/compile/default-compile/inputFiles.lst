@@ -1,2 +1,3 @@
-/Users/moorema1/School/final/project/storm/topology/src/main/java/EnrichmentBolt.java
-/Users/moorema1/School/final/project/storm/topology/src/main/java/Topology.java
+/opt/topology/src/main/java/EnrichmentBolt.java
+/opt/topology/src/main/java/HBaseClient.java
+/opt/topology/src/main/java/Topology.java
