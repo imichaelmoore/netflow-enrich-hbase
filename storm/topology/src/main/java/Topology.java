@@ -5,40 +5,17 @@ import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.TopologyBuilder;
-
 import org.apache.storm.topology.base.BaseBasicBolt;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.storm.tuple.Fields;
-
 
 import java.util.UUID;
-
-/**
- * Created by moorema1 on 12/10/16.
- */
-
 
 public class Topology {
 
     private static final Logger LOG = LoggerFactory.getLogger(Topology.class);
-
-
-    public static class PrinterBolt extends BaseBasicBolt {
-        @Override
-        public void execute(Tuple tuple, BasicOutputCollector collector) {
-            System.out.println(tuple);
-            LOG.debug("Got tuple {}", tuple);
-            collector.emit(tuple.getValues());
-        }
-
-        @Override
-        public void declareOutputFields(OutputFieldsDeclarer ofd) {
-            ofd.declare(new Fields("value"));
-        }
-
-    }
 
     public static void main(String[] args) throws Exception{
         Config config = new Config();
@@ -62,7 +39,7 @@ public class Topology {
         builder.setBolt("hbase-writer", new HBaseWriterBolt()).shuffleGrouping("dns-resolution");
         builder.setBolt("flow-counter", new FlowCounter()).shuffleGrouping("kafka-spout");
 
-        StormSubmitter.submitTopology("KafkaStormSample", config, builder.createTopology());
+        StormSubmitter.submitTopology("FinalProjectTopology", config, builder.createTopology());
     }
 
     
