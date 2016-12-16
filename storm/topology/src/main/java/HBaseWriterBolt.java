@@ -39,11 +39,13 @@ public class HBaseWriterBolt extends BaseBasicBolt {
             Map<String, String> parsed = GSON.fromJson(tuple.getString(0), Map.class);
 
             p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_addr"), Bytes.toBytes(parsed.get("src_addr")));
-            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_port"), Bytes.toBytes(parsed.get("src_addr")));
-            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("protocol"), Bytes.toBytes(parsed.get("src_addr")));
-            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("octets"), Bytes.toBytes(parsed.get("src_addr")));
-            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("dst_addr"), Bytes.toBytes(parsed.get("src_addr")));
-            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_host"), Bytes.toBytes(parsed.get("src_addr")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_port"), Bytes.toBytes(parsed.get("src_port")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("protocol"), Bytes.toBytes(parsed.get("protocol")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("octets"), Bytes.toBytes(parsed.get("octets")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("dst_addr"), Bytes.toBytes(parsed.get("dst_addr")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("dst_port"), Bytes.toBytes(parsed.get("dst_port")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_host"), Bytes.toBytes(parsed.get("src_host")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("dst_host"), Bytes.toBytes(parsed.get("dst_host")));
 
             hTable.put(p);
             hTable.close();

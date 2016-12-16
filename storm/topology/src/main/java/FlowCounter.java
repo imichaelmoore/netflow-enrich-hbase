@@ -56,18 +56,13 @@ public class FlowCounter extends BaseBasicBolt {
             try {
                 Get g = new Get(toBytes("all_flows"));
                 Result r = hTable.get(g);
-                counter += new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows"))));
-            } catch (IOException e) {}
-
-            Put p = new Put(toBytes("all_flows"));
-            p.add(toBytes("key"), toBytes("total_flows"), toBytes(counter));
-
-            try {
+                if(!r.isEmpty()) { counter += new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows")))); }
+                Put p = new Put(toBytes("all_flows"));
+                p.add(toBytes("key"), toBytes("total_flows"), toBytes(counter));
                 hTable.put(p);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
