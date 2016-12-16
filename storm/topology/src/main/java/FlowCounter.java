@@ -7,6 +7,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
+import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.tuple.Fields;
@@ -22,7 +23,7 @@ import java.util.Map;
 import static org.apache.hadoop.hbase.util.Bytes.toBytes;
 
 
-public class FlowCounter extends BaseBasicBolt {
+public class FlowCounter extends BaseBasicBolt implements IRichBolt {
 
     int counter;
     private OutputCollector collector;
@@ -34,6 +35,7 @@ public class FlowCounter extends BaseBasicBolt {
         this.collector = collector;
     }
 
+    @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
         counter++;
     }
@@ -71,8 +73,13 @@ public class FlowCounter extends BaseBasicBolt {
 
     }
 
+    @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("json"));
+    }
+
+    @Override
+    public Map<String, Object> getComponentConfiguration() {
+        return null;
     }
 
 }
