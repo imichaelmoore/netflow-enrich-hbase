@@ -27,26 +27,9 @@ public class FlowCounter extends BaseBasicBolt {
     private static final long serialVersionUID = 1L;
 
     int counter;
-    Configuration conf;
-    HTable hTable;
-    OutputCollector collector;
-
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
         this.counter = 0;
-
-        conf = HBaseConfiguration.create();
-        conf.set("hbase.zookeeper.quorum", "zookeeper");
-        conf.set("hbase.zookeeper.property.clientPort", "2181");
-        conf.set("hbase.master", "hbase:60000");
-
-        HTable hTable = null;
-        try {
-            hTable = new HTable(conf, "counters");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
 
@@ -54,6 +37,11 @@ public class FlowCounter extends BaseBasicBolt {
         if( counter % 10 == 0)  // Update HBase every 10 flows
         {
             try {
+                Configuration conf = HBaseConfiguration.create();
+                conf.set("hbase.zookeeper.quorum", "zookeeper");
+                conf.set("hbase.zookeeper.property.clientPort", "2181");
+                conf.set("hbase.master", "hbase:60000");
+                HTable hTable = new HTable(conf, "counters");
                 Get g = new Get(toBytes("all_flows"));
                 Result r = hTable.get(g);
                 if(!r.isEmpty()) { counter += new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows")))); }
