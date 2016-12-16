@@ -12,6 +12,7 @@ demo:
 
 	@echo "Creating HBase table..."
 	docker-compose run hbase /bin/bash -c "echo \"create 'netflow', 'flowdata', 'metadata'\" | /opt/hbase-1.2.4/bin/hbase shell"
+	docker-compose run hbase /bin/bash -c "echo \"create 'counters', 'key' \" | /opt/hbase-1.2.4/bin/hbase shell"
 	@echo ""
 	@echo ""
 	@echo ""
@@ -48,6 +49,7 @@ demo:
 
 	@echo "Querying Hbase...."
 	docker-compose run hbase /bin/bash -c "echo \"scan 'netflow'\" | /opt/hbase-1.2.4/bin/hbase shell"
+	docker-compose run hbase /bin/bash -c "echo \"scan 'counters'\" | /opt/hbase-1.2.4/bin/hbase shell"
 	@echo ""
 	@echo ""
 	@echo ""
