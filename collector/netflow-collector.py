@@ -137,6 +137,7 @@ while 1:
 		print "Received flow packet from %s:%d" % addrport
 		nfp = NetFlowPacket(data)
 		for flow in nfp.flows:
-			producer.send('netflow', json.dumps(flow))
+			producer.send('netflow', json.dumps(flow.__str__()))
+			print(json.dumps(flow.__str__()))
 
 

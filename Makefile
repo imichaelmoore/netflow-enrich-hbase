@@ -11,7 +11,7 @@ start: build
 demo:
 
 	@echo "Creating HBase table..."
-	docker-compose run hbase /bin/bash -c "echo \"create 'netflow', 'metadata'\" | /opt/hbase-1.2.4/bin/hbase shell"
+	docker-compose run hbase /bin/bash -c "echo \"create 'netflow', 'flowdata', 'metadata'\" | /opt/hbase-1.2.4/bin/hbase shell"
 	@echo ""
 	@echo ""
 	@echo ""
@@ -25,7 +25,7 @@ demo:
 	@echo ""
 
 	@echo "Waiting for Storm topology to settle..."
-	@sleep 20
+	@sleep 15 
 	@echo ""
 	@echo ""
 	@echo ""
@@ -33,7 +33,7 @@ demo:
 
 
 	@echo "Sending Netflow to collector and Kafka...."
-	docker-compose run generator /bin/bash -c "softflowd -v1 -r /opt/inside.tcpdump -n collector:50000"
+	docker-compose run generator /bin/bash -c "softflowd -v1 -r /opt/example-capture.pcap -n collector:50000"
 	@echo ""
 	@echo ""
 	@echo ""
