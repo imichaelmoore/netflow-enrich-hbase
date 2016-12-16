@@ -56,8 +56,8 @@ public class FlowCounter implements IRichBolt {
         if( counter % 10 == 0)  // Update HBase every 10 flows
         {
 
-            Get g = new Get(toBytes("all_flows"));
             try {
+                Get g = new Get(toBytes("all_flows"));
                 Result r = hTable.get(g);
                 counter += new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows"))));
             } catch (IOException e) {}
