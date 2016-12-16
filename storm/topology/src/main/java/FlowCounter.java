@@ -1,3 +1,4 @@
+import clojure.lang.BigInt;
 import com.google.gson.Gson;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -16,6 +17,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -37,7 +39,7 @@ public class FlowCounter extends BaseBasicBolt {
     public void execute(Tuple tuple, BasicOutputCollector collector) {
 
         localCounter++;
-        int existingHBaseCount = 0;
+        int existingHBaseCount =  0;
 
 
         if( localCounter % 10 == 0)  // Update HBase every 10 flows
@@ -50,7 +52,9 @@ public class FlowCounter extends BaseBasicBolt {
                 HTable hTable = new HTable(conf, "counters");
                 Get g = new Get(toBytes("all_flows"));
                 Result r = hTable.get(g);
-                if(!r.isEmpty()) { existingHBaseCount = Bytes.toInt(r.getValue(Bytes.toBytes("key"), Bytes.toBytes("total_flows_nearestTen"))); }
+
+                if(!r.isEmpty()) { existingHBaseCount = Integer.valueOf(Bytes.toString(r.getValue(Bytes.toBytes("key"), Bytes.toBytes("total_flows_nearestTen")))); }
+
                 Put p = new Put(toBytes("all_flows"));
                 p.add(toBytes("key"), toBytes("total_flows_nearestTen"), Bytes.toBytes(String.valueOf(localCounter + existingHBaseCount)));
 
