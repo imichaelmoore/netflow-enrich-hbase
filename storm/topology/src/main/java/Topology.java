@@ -28,7 +28,7 @@ public class Topology {
         String topic = "netflow";
 
         BrokerHosts zk = new ZkHosts(zkConnString);
-        SpoutConfig spoutConf = new SpoutConfig(zk, topic, "/", UUID.randomUUID().toString());
+        SpoutConfig spoutConf = new SpoutConfig(zk, topic, "/" + topic, UUID.randomUUID().toString());
         spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConf);
 
