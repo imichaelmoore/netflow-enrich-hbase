@@ -60,7 +60,7 @@ public class Topology {
         builder.setBolt("dns-resolution", new DNSResolve()).shuffleGrouping("kafka-spout");
         builder.setBolt("printer-bolt", new PrinterBolt()).shuffleGrouping("dns-resolution");
         builder.setBolt("hbase-writer", new HBaseWriterBolt()).shuffleGrouping("dns-resolution");
-        builder.setBolt("flow-counter", new FlowCounter()).shuffleGrouping("dns-resolution");
+        builder.setBolt("flow-counter", new FlowCounter()).shuffleGrouping("kafka-spout");
 
         StormSubmitter.submitTopology("KafkaStormSample", config, builder.createTopology());
     }

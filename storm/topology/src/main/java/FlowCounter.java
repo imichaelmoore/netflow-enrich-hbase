@@ -26,13 +26,11 @@ import static org.apache.hadoop.hbase.util.Bytes.toBytes;
 public class FlowCounter implements IRichBolt {
 
     int counter;
-    private OutputCollector collector;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context,
                         OutputCollector collector) {
         this.counter = 0;
-        this.collector = collector;
     }
 
     @Override
@@ -56,14 +54,13 @@ public class FlowCounter implements IRichBolt {
             e.printStackTrace();
         }
         Get g = new Get(toBytes("all_flows"));
-        int CurrentCounter = 0;
         try {
             Result r = hTable.get(g);
-            CurrentCounter = new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows"))));
+            counter += new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows"))));
         } catch (IOException e) {}
 
         Put p = new Put(toBytes("all_flows"));
-        p.add(toBytes("key"), toBytes("total_flows"), toBytes(CurrentCounter));
+        p.add(toBytes("key"), toBytes("total_flows"), toBytes(counter));
 
         try {
             hTable.put(p);
