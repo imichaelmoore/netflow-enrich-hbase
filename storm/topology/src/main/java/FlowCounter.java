@@ -49,9 +49,9 @@ public class FlowCounter extends BaseBasicBolt {
                 HTable hTable = new HTable(conf, "counters");
                 Get g = new Get(toBytes("all_flows"));
                 Result r = hTable.get(g);
-                if(!r.isEmpty()) { localCounter += Bytes.toInt(r.getValue(toBytes("key"), toBytes("total_flows"))); }
+                if(!r.isEmpty()) { localCounter += Bytes.toInt(r.getValue(toBytes("key"), toBytes("total_flows_nearestTen"))); }
                 Put p = new Put(toBytes("all_flows"));
-                p.add(toBytes("key"), toBytes("total_flows"), Bytes.toBytes(String.valueOf(localCounter)));
+                p.add(toBytes("key"), toBytes("total_flows_nearestTen"), Bytes.toBytes(String.valueOf(localCounter)));
                 hTable.put(p);
                 localCounter = 0;
             } catch (IOException e) {
@@ -61,7 +61,7 @@ public class FlowCounter extends BaseBasicBolt {
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("json"));
+
     }
 
 }
