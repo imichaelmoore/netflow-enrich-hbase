@@ -37,6 +37,7 @@ public class FlowCounter extends BaseBasicBolt {
     public void execute(Tuple tuple, BasicOutputCollector collector) {
 
         localCounter++;
+        int existingHBaseCount = 0;
 
 
         if( localCounter % 10 == 0)  // Update HBase every 10 flows
@@ -49,9 +50,10 @@ public class FlowCounter extends BaseBasicBolt {
                 HTable hTable = new HTable(conf, "counters");
                 Get g = new Get(toBytes("all_flows"));
                 Result r = hTable.get(g);
-                if(!r.isEmpty()) { localCounter += Bytes.toInt(r.getValue(toBytes("key"), toBytes("total_flows_nearestTen"))); }
+                if(!r.isEmpty()) { existingHBaseCount = Bytes.toInt(r.getValue(Bytes.toBytes("key"), Bytes.toBytes("total_flows_nearestTen"))); }
                 Put p = new Put(toBytes("all_flows"));
-                p.add(toBytes("key"), toBytes("total_flows_nearestTen"), Bytes.toBytes(String.valueOf(localCounter)));
+                p.add(toBytes("key"), toBytes("total_flows_nearestTen"), Bytes.toBytes(String.valueOf(localCounter + existingHBaseCount)));
+
                 hTable.put(p);
                 localCounter = 0;
             } catch (IOException e) {
