@@ -2,7 +2,10 @@ clean:
 	docker-compose kill
 	docker-compose rm -f
 
-start:
+build: clean
+	docker-compose build
+
+start: build
 	docker-compose up
 
 demo:
@@ -21,8 +24,8 @@ demo:
 	@echo ""
 	@echo ""
 
-	@echo "Waiting for Storm topology to settle to settle..."
-	sleep 20
+	@echo "Waiting for Storm topology to settle..."
+	@sleep 20
 	@echo ""
 	@echo ""
 	@echo ""
@@ -36,8 +39,8 @@ demo:
 	@echo ""
 	@echo ""
 
-	@echo "Waiting for stream to get processed..."
-	sleep 20
+	@echo "Waiting for stream to get processed through Storm topology..."
+	@sleep 30
 	@echo ""
 	@echo ""
 	@echo ""

@@ -8,7 +8,9 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
+import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
 
@@ -19,11 +21,11 @@ import java.util.UUID;
 import static org.apache.hadoop.hbase.util.Bytes.toBytes;
 
 
-public class HBaseWriterBolt extends BaseRichBolt {
+public class HBaseWriterBolt extends BaseBasicBolt {
 
     private static final long serialVersionUID = 1L;
 
-    public void execute(Tuple tuple) {
+    public void execute(Tuple tuple, BasicOutputCollector collector) {
 
         Configuration conf = HBaseConfiguration.create();
 
@@ -33,15 +35,12 @@ public class HBaseWriterBolt extends BaseRichBolt {
         try {
             HTable hTable = new HTable(conf, "netflow");
             Put p = new Put(toBytes(UUID.randomUUID().toString()));
-            p.add(Bytes.toBytes("metadata"), Bytes.toBytes("received"), Bytes.toBytes("received"));
+            p.add(Bytes.toBytes("metadata"), Bytes.toBytes("received"), Bytes.toBytes(tuple.toString()));
             hTable.put(p);
             hTable.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
 
     }
 

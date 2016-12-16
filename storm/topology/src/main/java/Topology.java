@@ -57,10 +57,9 @@ public class Topology {
 
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("kafka-spout", kafkaSpout);
-        builder.setBolt("printer-bolt", new PrinterBolt()).shuffleGrouping("kafka-spout");
-        builder.setBolt("hbase-writer", new HBaseWriterBolt()).shuffleGrouping("kafka-spout");
-
-//        LocalCluster cluster = new LocalCluster();
+        builder.setBolt("dns-resolution", new DNSResolve()).shuffleGrouping("kafka-spout");
+        builder.setBolt("printer-bolt", new PrinterBolt()).shuffleGrouping("dns-resolution");
+        builder.setBolt("hbase-writer", new HBaseWriterBolt()).shuffleGrouping("dns-resolution");
 
         StormSubmitter.submitTopology("KafkaStormSample", config, builder.createTopology());
     }

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+# Netflow Collector sourced from http://www.mindrot.org/misc/netflow-collector.py, 
+# and modified to send flows as JSON to Apache Kafka by Michael Moore in 2016.
 
 import socket, select, struct
+import json
 
 from kafka import KafkaProducer
 producer = KafkaProducer(bootstrap_servers='kafka:9092', api_version="0.8.1")
@@ -71,10 +74,7 @@ class Flow1(Flow):
 		self.tcp_flags = _ff[14]
 
 	def __str__(self):
-		ret = "proto %d %s:%d > %s:%d %d bytes" % \
-		    (self.protocol, self.src_addr, self.src_port, \
-		     self.dst_addr, self.dst_port, self.octets)
-		return ret
+		return {'protocol': self.protocol, 'src_addr': self.src_addr, 'src_port': self.src_port, 'dst_addr': self.dst_addr, 'dst_port': self.dst_port, 'octets': self.octets}
 
 class NetFlowPacket:
 	FLOW_TYPES = {
@@ -127,7 +127,7 @@ for addr in addrs:
 	sock.bind(addr[4])
 	socks.append(sock)
 
-	print "listening on [%s]:%d" % (addr[4][0], addr[4][1])
+	print "-========================- NETFLOW COLLECTOR READY on [%s]:%d" % (addr[4][0], addr[4][1])
 
 while 1:
 	(rlist, wlist, xlist) = select.select(socks, [], socks)
@@ -135,7 +135,8 @@ while 1:
 	for sock in rlist:
 		(data, addrport) = sock.recvfrom(8192)
 		print "Received flow packet from %s:%d" % addrport
-		print NetFlowPacket(data)
-		producer.send('netflow', NetFlowPacket(data).__str__())
+		nfp = NetFlowPacket(data)
+		for flow in nfp.flows:
+			producer.send('netflow', json.dumps(flow))
 
 
