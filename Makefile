@@ -40,7 +40,7 @@ demo: hbase-create-netflow hbase-create-counter
 	@echo ""
 
 	@echo "Waiting for stream to get processed through Storm topology..."
-	@sleep 20
+	@sleep 30
 	@echo ""
 	@echo ""
 	@echo ""

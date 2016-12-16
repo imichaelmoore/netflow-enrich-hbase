@@ -5,6 +5,7 @@ import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
@@ -44,7 +45,7 @@ public class FlowCounter extends BaseBasicBolt {
                 HTable hTable = new HTable(conf, "counters");
                 Get g = new Get(toBytes("all_flows"));
                 Result r = hTable.get(g);
-                if(!r.isEmpty()) { counter += new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows")))); }
+                if(!r.isEmpty()) { counter += new Integer(Bytes.toString(r.getValue(toBytes("key"), toBytes("total_flows")))); }
                 Put p = new Put(toBytes("all_flows"));
                 p.add(toBytes("key"), toBytes("total_flows"), toBytes(counter));
                 hTable.put(p);
