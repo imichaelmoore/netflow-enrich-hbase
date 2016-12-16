@@ -26,26 +26,20 @@ import static org.apache.hadoop.hbase.util.Bytes.toBytes;
 public class FlowCounter implements IRichBolt {
 
     int counter;
+    Configuration conf;
+    HTable hTable;
+    OutputCollector collector;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context,
                         OutputCollector collector) {
         this.counter = 0;
-    }
+        this.collector = collector;
 
-    @Override
-    public void execute(Tuple tuple) {
-        counter++;
-    }
-
-    @Override
-    public void cleanup() {
-        Configuration conf = HBaseConfiguration.create();
-
+        conf = HBaseConfiguration.create();
         conf.set("hbase.zookeeper.quorum", "zookeeper");
         conf.set("hbase.zookeeper.property.clientPort", "2181");
         conf.set("hbase.master", "hbase:60000");
-
 
         HTable hTable = null;
         try {
@@ -53,20 +47,37 @@ public class FlowCounter implements IRichBolt {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Get g = new Get(toBytes("all_flows"));
-        try {
-            Result r = hTable.get(g);
-            counter += new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows"))));
-        } catch (IOException e) {}
 
-        Put p = new Put(toBytes("all_flows"));
-        p.add(toBytes("key"), toBytes("total_flows"), toBytes(counter));
+    }
 
-        try {
-            hTable.put(p);
-        } catch (IOException e) {
-            e.printStackTrace();
+    @Override
+    public void execute(Tuple tuple) {
+
+        if( counter % 10 == 0)  // Update HBase every 10 flows
+        {
+
+            Get g = new Get(toBytes("all_flows"));
+            try {
+                Result r = hTable.get(g);
+                counter += new Integer(String.valueOf(r.getValue(toBytes("key"), toBytes("total_flows"))));
+            } catch (IOException e) {}
+
+            Put p = new Put(toBytes("all_flows"));
+            p.add(toBytes("key"), toBytes("total_flows"), toBytes(counter));
+
+            try {
+                hTable.put(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            collector.ack(tuple);
         }
+
+    }
+
+    @Override
+    public void cleanup() {
 
     }
 
