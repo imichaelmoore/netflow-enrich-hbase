@@ -23,7 +23,7 @@ import java.util.Map;
 import static org.apache.hadoop.hbase.util.Bytes.toBytes;
 
 
-public class FlowCounter extends BaseBasicBolt implements IRichBolt {
+public class FlowCounter implements IRichBolt {
 
     int counter;
     private OutputCollector collector;
