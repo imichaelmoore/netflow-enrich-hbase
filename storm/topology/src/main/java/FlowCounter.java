@@ -36,7 +36,7 @@ public class FlowCounter implements IRichBolt {
     }
 
     @Override
-    public void execute(Tuple tuple, BasicOutputCollector collector) {
+    public void execute(Tuple tuple) {
         counter++;
     }
 
