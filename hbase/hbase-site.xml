@@ -20,7 +20,7 @@
 
   <property>
     <name>hbase.zookeeper.quorum</name>
-    <value>zookeeper,zookeeper2,zookeeper3</value>
+    <value>zookeeper</value>
   </property>
   
   <property>
