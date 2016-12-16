@@ -11,8 +11,6 @@ RUN cd /opt/apache-storm-1.0.2/lib && wget http://central.maven.org/maven2/org/a
 
 ADD storm.yaml /opt/apache-storm-1.0.2/conf/storm.yaml
 
-#ADD topology/m2.tgz /
-
 WORKDIR /opt/topology
 COPY topology/pom.xml /opt/topology/pom.xml
 

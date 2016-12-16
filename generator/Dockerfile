@@ -4,10 +4,10 @@ RUN apt-get update
 RUN apt-get -y install softflowd gzip axel wget pigz
 
 WORKDIR /opt
-#RUN axel -a https://www.ll.mit.edu/ideval/data/1999/training/week2/monday/inside.tcpdump.gz
-#RUN wget -O capture.pcap.gz "https://wiki.wireshark.org/SampleCaptures?action=AttachFile&do=get&target=c05-http-reply-r1.pcap.gz" 
-#RUN wget -O capture.pcap "https://wiki.wireshark.org/SampleCaptures?action=AttachFile&do=get&target=http-chunked-gzip.pcap"
-COPY capture.pcap.gz /opt/example-capture.pcap.gz
+#RUN axel -a https://www.ll.mit.edu/ideval/data/1999/training/week2/monday/inside.tcpdump.gz  # Can use this instead for more pcap.  Doesn't contain resolvable DNS though, so a bad example.
+
+COPY capture.pcap.gz /opt/example-capture.pcap.gz  # Capture.pcap gathered on AWS instance, 12-16-2016
+
 RUN pigz -d /opt/example-capture.pcap.gz
 
 CMD softflowd -r /opt/example-capture.pcap -n collector:50000 -v
