@@ -10,12 +10,11 @@ start: build
 
 hbase-create-netflow:
 	@echo "Creating HBase Netflow Table..."
-	docker-compose run hbase /bin/bash -c "echo \"create 'netflow', 'flowdata', 'metadata'\" | /opt/hbase-1.2.4/bin/hbase shell"
+	docker-compose run --name netflowCreator hbase /bin/bash -c "echo \"create 'netflow', 'flowdata', 'metadata'\" | /opt/hbase-1.2.4/bin/hbase shell" &
 
 hbase-create-counter:
 	@echo "Creating HBase Counters Table..."
-	docker-compose run hbase /bin/bash -c "echo \"create 'counters', 'key' \" | /opt/hbase-1.2.4/bin/hbase shell"
-
+	docker-compose run --name counterCreator /bin/bash -c "echo \"create 'counters', 'key' \" | /opt/hbase-1.2.4/bin/hbase shell"
 
 demo: hbase-create-netflow hbase-create-counter
 	@echo "Submitting Storm topology..."
