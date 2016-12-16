@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -15,6 +16,8 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,6 +39,18 @@ public class HBaseWriterBolt extends BaseBasicBolt {
             HTable hTable = new HTable(conf, "netflow");
             Put p = new Put(toBytes(UUID.randomUUID().toString()));
             p.add(Bytes.toBytes("metadata"), Bytes.toBytes("received"), Bytes.toBytes(tuple.toString()));
+
+
+            Gson GSON = new Gson();
+            Map<String, String> parsed = GSON.fromJson(tuple.toString(), Map.class);
+
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_addr"), Bytes.toBytes(parsed.get("src_addr")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_port"), Bytes.toBytes(parsed.get("src_addr")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("protocol"), Bytes.toBytes(parsed.get("src_addr")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("octets"), Bytes.toBytes(parsed.get("src_addr")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("dst_addr"), Bytes.toBytes(parsed.get("src_addr")));
+            p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_host"), Bytes.toBytes(parsed.get("src_addr")));
+
             hTable.put(p);
             hTable.close();
         } catch (IOException e) {

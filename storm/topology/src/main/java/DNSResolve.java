@@ -45,16 +45,16 @@ public class DNSResolve extends BaseBasicBolt {
         // dest_addr
         InetAddress dest_addr = null;
         try {
-            dest_addr = InetAddress.getByName(parsed.get("dest_addr"));
+            dest_addr = InetAddress.getByName(parsed.get("dst_addr"));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
         String dest_host = dest_addr.getHostName();
-        parsed.put("src_host",dest_host.toString());
+        parsed.put("dst_host",dest_host.toString());
 
         String newJson = GSON.toJson(parsed);
 
-        collector.emit(new Values("json", newJson));
+        collector.emit(new Values(newJson));
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
