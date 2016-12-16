@@ -38,11 +38,11 @@ public class HBaseWriterBolt extends BaseBasicBolt {
         try {
             HTable hTable = new HTable(conf, "netflow");
             Put p = new Put(toBytes(UUID.randomUUID().toString()));
-            p.add(Bytes.toBytes("metadata"), Bytes.toBytes("received"), Bytes.toBytes(tuple.toString()));
+            p.add(Bytes.toBytes("metadata"), Bytes.toBytes("received"), Bytes.toBytes(tuple.getString(0)));
 
 
             Gson GSON = new Gson();
-            Map<String, String> parsed = GSON.fromJson(tuple.toString(), Map.class);
+            Map<String, String> parsed = GSON.fromJson(tuple.getString(0), Map.class);
 
             p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_addr"), Bytes.toBytes(parsed.get("src_addr")));
             p.add(Bytes.toBytes("flowdata"), Bytes.toBytes("src_port"), Bytes.toBytes(parsed.get("src_addr")));

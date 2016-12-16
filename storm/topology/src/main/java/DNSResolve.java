@@ -30,7 +30,7 @@ public class DNSResolve extends BaseBasicBolt {
     public void execute(Tuple tuple, BasicOutputCollector collector) {
 
         Gson GSON = new Gson();
-        Map<String, String> parsed = GSON.fromJson(tuple.toString(), Map.class);
+        Map<String, String> parsed = GSON.fromJson(tuple.getString(0), Map.class);
 
         // src_addr
         InetAddress src_addr = null;
