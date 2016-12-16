@@ -1,4 +1,5 @@
 FROM python:2.7
+
 COPY netflow-collector.py /opt
 
 RUN pip install --upgrade kafka-python
