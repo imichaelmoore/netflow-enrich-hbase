@@ -11,10 +11,9 @@ RUN cd /opt/apache-storm-1.0.2/lib && wget http://central.maven.org/maven2/org/a
 
 ADD storm.yaml /opt/apache-storm-1.0.2/conf/storm.yaml
 
-#ADD topology/m2.tgz /
-
 WORKDIR /opt/topology
 COPY topology/pom.xml /opt/topology/pom.xml
+RUN /opt/apache-maven-3.3.9/bin/mvn dependency:resolve  # Get dependencies first, so we don't fetch on every change.
 
 COPY topology/ /opt/topology
 RUN /opt/apache-maven-3.3.9/bin/mvn clean 
