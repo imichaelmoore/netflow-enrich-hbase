@@ -1,6 +1,8 @@
-# Hadoop Final Project
+# Netflow Enrichment to Hbase
 
 This is a final project for a class I took in grad school.  The project built out a workflow to ingest, process, enrich, and store netflow data.  
+
+*This project is unmaintained and likely is using outdated and insecure dependencies.*
 
 The project is runnable in `docker-compose`.
 
