@@ -1,4 +1,10 @@
-# Final Project
+# Hadoop Final Project
+
+This is a final project for a class I took in grad school.  The project built out a workflow to ingest, process, enrich, and store netflow data.  
+
+The project is runnable in `docker-compose`.
+
+There is a video walk-through of this project on YouTube at https://www.youtube.com/watch?v=AAwTKpTtVek.
 
 ## Requirements
 
